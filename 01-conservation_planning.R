@@ -2,12 +2,12 @@ library(tidyverse)
 library(sf)
 library(prioritizr)
 library(RStoolbox)
+ test
+
+pu <- st_read("data/planning_units/pu_lockedin.shp")
 
 
-pu <- st_read("planning_units/pu_lockedin.shp")
-
-
-features <- stack(list.files("features/", pattern = ".tif", full.names = T))
+features <- stack(list.files("data/features/", pattern = ".tif", full.names = T))
 
 features <- normImage(features, norm = T)
 features <- (features - features@data@min)/(features@data@max - features@data@min)
@@ -20,7 +20,7 @@ p1 <- problem(pu, features = features, cost_column = "cost_column") %>%
           add_min_set_objective() %>% 
           add_relative_targets(0.3) %>%  ### 100 porciento en las islas y 30 porciento en la tierra
           add_binary_decisions() %>%
-          #(number_solutions = 1000, pool_gap = 0.1) %>%
+          # (number_solutions = 1000, pool_gap = 0.1) %>%
           add_default_solver(verbose = FALSE)
 
 # solve the problem
