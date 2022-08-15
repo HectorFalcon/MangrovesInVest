@@ -109,18 +109,15 @@ library(raster)
 
 
 #Crop shp
-islands <- read_sf("data/shp/islands/elementos_insulares_cdtim_v2_1_2018.shp") %>% 
+islands <- read_sf("data/shp/islands/Islas_BM.shp") %>% 
         st_transform(., crs=4326) %>% 
         st_make_valid()
 
-isl <- islands %>% 
-        filter(REG_MAR%in% c("GOLFO DE CALIFORNIA","OCÉANO PACÍFICO NORTE" )) %>% 
-        select(OBJECTID)
+isl <- islands
 
 
-pu <- read_sf("data/planning_units/pu_lockedin.shp") %>% 
-        st_transform(., crs=4326)
 
+mapview::mapview(isl)
 
 isl_bm <- pu[isl,]
 
@@ -129,21 +126,22 @@ isl_bm <- isl_bm %>%
 
 
 #Raster shp
+pu <- read_sf("data/planning_units/pu_land.shp") %>% 
+  st_transform(., crs=4326)
 
-BM <- read_sf("data/planning_units/pu_lockedin.shp")
 
-ext <- raster::extent(BM)
+ext <- raster::extent(pu)
 gridsize <- 0.01
 r <- raster::raster(ext, res=gridsize)
 
-y <- isl_bm %>% 
+y <- isl %>% 
         mutate(Constant=1)
 
-rast <- raster::rasterize(y, r, field= "Constant")
+rast <- raster::rasterize(priority, r, field= "Constant")
 crs(rast) <- "+proj=longlat"
 plot(rast)
-
-raster::writeRaster(rast, "data/features/islands_BM.tif", overwrite=T)
+dir.create("data/outputs/")
+raster::writeRaster(rast, "data/outputs/Magdalena_Bay_Priority_zones.tif", overwrite=T)
 
 
 #Resample all rasters to same extent
