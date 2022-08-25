@@ -43,7 +43,7 @@ adjust.rasters <- function(features) {
 
 features <- list.files("data/features", 
                              pattern = ".tif",
-                             full.names = T)
+                            full.names = T)
 
 ## Apply adjust function
 
